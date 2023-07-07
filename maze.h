@@ -55,6 +55,9 @@ void printMaze(Maze *, Route *);
 // Imprime a distância e as coordenadas feitas pelo mouse.
 void printRoute(Route *);
 
+// Verifica se e valido
+int isValid(Maze *maze, Position *new_position);
+
 // Função recursiva que procura o menor caminho.
 int find(Position *, Maze *, Route *, int);
 

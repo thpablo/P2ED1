@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/* Funcoes da fila -> Iniciar, inserir, retirar, eh vazia */
-
 Lista *iniciaFila(){
     Lista *filaAlocated = (Lista*) malloc(sizeof(Lista));
     

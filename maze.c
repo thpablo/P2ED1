@@ -142,8 +142,7 @@ void printRoute(Route *route)
 }
 
 // Função verifica se a posição é válida.
-int isValid(Maze *maze, Position *new_position, Route *routeTraveled,
-            int index)
+int isValid(Maze *maze, Position *new_position)
 {
 
   if (new_position->y < 0 || new_position->x < 0 ||
@@ -163,18 +162,17 @@ int isValid(Maze *maze, Position *new_position, Route *routeTraveled,
   if (maze->array[new_position->y][new_position->x] == '.')
     // Ele já andou naquele local
     return 0;
-
-  if ((index >= 2) &&
-      (new_position->y == routeTraveled->positions[index - 2].y &&
-       new_position->x == routeTraveled->positions[index - 2].x))
+/*
+  if ((index >= 2) && (new_position->y == routeTraveled->positions[index - 2].y &&
+  new_position->x == routeTraveled->positions[index - 2].x) && isRecursion)
   {
     /*
      * (Index - 2). Pois ele soma 1 para uma possível posicao futura na chamada
      * da funcao (+1) e pois ele quer ver uma posicao anterior a atual (+1).
      * Totalizando 2 posicoes a mais que a ser verificada.
      */
-    return 0;
-  }
+    //return 0;
+  //}
 
   return 1;
 }
@@ -216,7 +214,7 @@ int find(Position *mouse, Maze *maze, Route *route, int index)
                              mouse->x + actions[i].x}; // Atualiza a posição.
 
     // Verifica se a posição for válida
-    if (isValid(maze, &new_position, route, index))
+    if (isValid(maze, &new_position))
     {
       route->positions[index] =
           new_position; // Nova posição armazenada no array.
