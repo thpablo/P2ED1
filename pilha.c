@@ -57,7 +57,6 @@ bool insertPosPilha(Lista *pilha, Position pos)
         // Proximo da nova Celula aponta para NULL
         newCell->pProx = NULL;
         
-        printf(" Primeira celula: %d %d \n", pilha->Head->pProx->positions->x, pilha->Head->pProx->positions->y );
         pilha->tam++;
          
         return true;
@@ -92,7 +91,7 @@ bool removePosPilha(Lista *pilha)
 
     pilha->Head->pProx = cellAux;
     
-    pilha->tam--;
+    //pilha->tam--;
 
     return true;
 }
@@ -112,6 +111,17 @@ void freePilha(Lista* pilha){
     free(pilha->Head);
     free(pilha);
 }
+
+void MOSTRARCAMINHO(Maze *maze){
+    for (int i = 0; i < maze->y; i++)
+    {
+        for (int j = 0; j < maze->x; j++)
+        {
+            printf("%c", maze->array[i][j]);
+        }
+        printf("\n");
+  }
+}
 /*
 A segunda parte do trabalho é muito parecida com a implementação com filas. A diferença está no ponto
 em que ao invés de usar uma fila, uma pilha será usada.
@@ -129,8 +139,7 @@ saída é feita repetindo-se as seguintes instruções:
 //Pilha iniciada no main
 
 int DFS(Maze *maze, Lista *pilha, Position *mouse){
-    Position actions[4] = {{0, -1}, {1, 0}, {-1, 0}, {0, 1}};
-    
+    Position actions[4] = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}};
     Position newPos = *mouse; //Inicia com a posicao inicial do rato
     //mouse->x,y posicao inicial do rato
     if(!insertPosPilha(pilha, *mouse)){
@@ -138,63 +147,69 @@ int DFS(Maze *maze, Lista *pilha, Position *mouse){
         return false;
     }
 
+    int res = false;
+
     while(!isEmptyPilha(pilha)){
 
-        if(pilha->Head->pProx->positions->x == maze->finalPosX &&
-        pilha->Head->pProx->positions->y == maze->finalPosY)
-            return pilha->tam;
+        // Verifica se chegou no final -> Retorna tamanho da pilha
+        if( pilha->Head->pProx->positions->x == maze->finalPosX && 
+            pilha->Head->pProx->positions->y == maze->finalPosY)
+            res = true;
+
+        bool caminhoValido = false;
 
         for(int i = 0; i < 4; i++){
-            newPos.x = newPos.x + actions[i].x;
-            newPos.y = newPos.y + actions[i].y;
+            newPos.x = pilha->Head->pProx->positions->x + actions[i].x;
+            newPos.y = pilha->Head->pProx->positions->y + actions[i].y;
 
             if(isValid(maze, &newPos)){
                 insertPosPilha(pilha, newPos);
+                caminhoValido = true;
+
+                    maze->array[newPos.y][newPos.x] = '.';
+                break;
             }
         }
-    }
-    return false; //Imprimir tentativa
-}
 
+        if(!caminhoValido){
+            removePosPilha(pilha);
+        }
+    }
+    return res; //Imprimir tentativa
+}
 
 int main()
 {
-    Position pos;
-    pos.x = 3;
-    pos.y = 4;
+    int x, y;
 
+    // Lendo dimensões do labirinto.
+    scanf("%d %d", &y, &x);
 
-    Lista *pilha = iniciaPilha();
+    Lista* pilha = iniciaPilha();
+    char flag;
+    // Lendo a flag que diz o tipo de retorno do programa.
+    scanf(" %c", &flag);
 
-    if (isEmptyPilha(pilha))
-        printf("e vazia\n");
+    Maze *maze = allocateMaze(y, x); // Alocando labirinto.
 
+    Position *mouse = allocatePosition(); // Aloca Rato
 
-    // 1 insercao
-    if (insertPosPilha(pilha, pos))
-        printf("Inseriu\n");
-    
-    // 2 insercao
-    if (insertPosPilha(pilha, pos))
-        printf("Inseriu\n");
+    readMaze(maze, mouse); // Lê os caracteres que formam o labirinto.
 
+    // Verifica se existe um menor caminho.
+    int res = DFS(maze, pilha, mouse);
 
-    showPos(pilha);
+    if (res) {
+        printf("%d", pilha->tam - 2);
+        MOSTRARCAMINHO(maze);
+    } else
+        printf("EPIC FAIL!%d\n", pilha->tam - 2);
 
-    if(removePosPilha(pilha))
-        printf("Removeu\n");
-    
-    if(removePosPilha(pilha))
-        printf("Removeu\n");
-    
-    showPos(pilha);
+    MOSTRARCAMINHO(maze);
 
-    if (isEmptyPilha(pilha))
-    {
-        printf("e vazia, %d\n", isEmptyPilha(pilha));
-    }
+    // Libera os espaços alocados.
+    freePosition(mouse);
 
-    freePilha(pilha);
-
+    freeMaze(maze);
     return 0;
 }
