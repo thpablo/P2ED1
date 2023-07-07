@@ -32,7 +32,7 @@ bool isEmptyPilha(Lista *pilha)
     return pilha->Head->pProx == NULL;
 }
 
-bool insertPosPilha(Lista *pilha, Position *pos)
+bool insertPosPilha(Lista *pilha, Position pos)
 {
     Cell *newCell = (Cell *) malloc(sizeof(Cell));
     newCell->positions = allocatePosition();
@@ -42,8 +42,8 @@ bool insertPosPilha(Lista *pilha, Position *pos)
         return false;
 
     // Posicao da nova celula recebe valores de pos;
-    newCell->positions->x = pos->x;
-    newCell->positions->y = pos->y;
+    newCell->positions->x = pos.x;
+    newCell->positions->y = pos.y;
 
     /* Se for o primeiro item a ser inserido */
     if(isEmptyPilha(pilha)){
@@ -130,19 +130,27 @@ saída é feita repetindo-se as seguintes instruções:
 
 int DFS(Maze *maze, Lista *pilha, Position *mouse){
     Position actions[4] = {{0, -1}, {1, 0}, {-1, 0}, {0, 1}};
-    Position newPos
-
+    
+    Position newPos = *mouse; //Inicia com a posicao inicial do rato
     //mouse->x,y posicao inicial do rato
-    if(!insertPosPilha(pilha, mouse)){
+    if(!insertPosPilha(pilha, *mouse)){
         printf("Nao foi possivel inserir a posicao");
         return false;
     }
 
     while(!isEmptyPilha(pilha)){
-        if(pilha->Head->pProx->positions->x == maze->finalPosX && pilha->Head->pProx->positions->y == maze->finalPosY)
+
+        if(pilha->Head->pProx->positions->x == maze->finalPosX &&
+        pilha->Head->pProx->positions->y == maze->finalPosY)
             return pilha->tam;
+
         for(int i = 0; i < 4; i++){
-            if(isValid(maze, ))
+            newPos.x = newPos.x + actions[i].x;
+            newPos.y = newPos.y + actions[i].y;
+
+            if(isValid(maze, &newPos)){
+                insertPosPilha(pilha, newPos);
+            }
         }
     }
     return false; //Imprimir tentativa
@@ -151,11 +159,9 @@ int DFS(Maze *maze, Lista *pilha, Position *mouse){
 
 int main()
 {
-    Position *pos = allocatePosition();
-    pos->x = 3;
-    pos->y = 4;
-
-    
+    Position pos;
+    pos.x = 3;
+    pos.y = 4;
 
 
     Lista *pilha = iniciaPilha();
@@ -171,8 +177,7 @@ int main()
     // 2 insercao
     if (insertPosPilha(pilha, pos))
         printf("Inseriu\n");
-    
-    free(pos);
+
 
     showPos(pilha);
 
