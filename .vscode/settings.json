@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "maze.h": "c",
+        "stdlib.h": "c",
+        "limits.h": "c"
+    }
+}
