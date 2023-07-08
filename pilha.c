@@ -175,6 +175,7 @@ int DFS(Maze *maze, Lista *pilha, Position *mouse){
             removePosPilha(pilha);
         }
     }
+    printf("RES: %d\n", res);
     return res; //Imprimir tentativa
 }
 
@@ -199,11 +200,10 @@ int main()
     // Verifica se existe um menor caminho.
     int res = DFS(maze, pilha, mouse);
 
-    if (res) {
-        printf("%d", pilha->tam - 2);
-        MOSTRARCAMINHO(maze);
-    } else
-        printf("EPIC FAIL!%d\n", pilha->tam - 2);
+    if (res)
+        printf("%d\n", pilha->tam - 2);
+    else
+        printf("EPIC FAIL");
 
     MOSTRARCAMINHO(maze);
 

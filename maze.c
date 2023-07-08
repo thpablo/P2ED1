@@ -162,17 +162,6 @@ int isValid(Maze *maze, Position *new_position)
   if (maze->array[new_position->y][new_position->x] == '.')
     // Ele já andou naquele local
     return 0;
-/*
-  if ((index >= 2) && (new_position->y == routeTraveled->positions[index - 2].y &&
-  new_position->x == routeTraveled->positions[index - 2].x) && isRecursion)
-  {
-    /*
-     * (Index - 2). Pois ele soma 1 para uma possível posicao futura na chamada
-     * da funcao (+1) e pois ele quer ver uma posicao anterior a atual (+1).
-     * Totalizando 2 posicoes a mais que a ser verificada.
-     */
-    //return 0;
-  //}
 
   return 1;
 }
