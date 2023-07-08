@@ -112,16 +112,6 @@ void freePilha(Lista* pilha){
     free(pilha);
 }
 
-void MOSTRARCAMINHO(Maze *maze){
-    for (int i = 0; i < maze->y; i++)
-    {
-        for (int j = 0; j < maze->x; j++)
-        {
-            printf("%c", maze->array[i][j]);
-        }
-        printf("\n");
-  }
-}
 /*
 A segunda parte do trabalho é muito parecida com a implementação com filas. A diferença está no ponto
 em que ao invés de usar uma fila, uma pilha será usada.
@@ -165,8 +155,7 @@ int DFS(Maze *maze, Lista *pilha, Position *mouse){
             if(isValid(maze, &newPos)){
                 insertPosPilha(pilha, newPos);
                 caminhoValido = true;
-
-                    maze->array[newPos.y][newPos.x] = '.';
+                maze->array[newPos.y][newPos.x] = '.';
                 break;
             }
         }
@@ -205,7 +194,7 @@ int main()
     else
         printf("EPIC FAIL");
 
-    MOSTRARCAMINHO(maze);
+    printMaze(maze);
 
     // Libera os espaços alocados.
     freePosition(mouse);

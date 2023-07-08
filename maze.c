@@ -111,10 +111,8 @@ void readMaze(Maze *maze, Position *mouse)
 }
 
 // Função para imprimir o labirinto.
-void printMaze(Maze *maze, Route *positionsTraveled)
+void printMaze(Maze *maze)
 {
-  printf("%d\n", positionsTraveled->size);
-
   for (int i = 0; i < maze->y; i++)
   {
     for (int j = 0; j < maze->x; j++)

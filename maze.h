@@ -50,7 +50,7 @@ void freePosition(Position *);
 void readMaze(Maze *, Position *);
 
 // Imprime a soluçao do labirinto.
-void printMaze(Maze *, Route *);
+void printMaze(Maze *);
 
 // Imprime a distância e as coordenadas feitas pelo mouse.
 void printRoute(Route *);

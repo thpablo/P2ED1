@@ -26,8 +26,10 @@ int main() {
 
   // Verifica se existe um menor caminho.
   if (find(mouse, maze, route, 0)) {
-    if (flag == 'p')
-      printMaze(maze, route);
+    if (flag == 'p'){
+      printf("%d\n", route->size);
+      printMaze(maze);
+    }
     else
       printRoute(route);
   } else

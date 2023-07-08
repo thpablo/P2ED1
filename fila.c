@@ -33,17 +33,20 @@ bool isEmptyFila(Lista *Fila){
     return Fila->Head->pProx == NULL;
 }
 
-bool insertPosFila(Lista* fila, Position* pos){
+bool insertPosFila(Lista* fila, Position pos){
 
     // Nova Celula alocada
     Cell *newCell = (Cell *) malloc(sizeof(Cell));
+
+    newCell->positions = allocatePosition();
 
     // Falha na alocacao da nova celula
     if(newCell == NULL)
         return false;
 
     // Nova Celula recebe as posicoes
-    newCell->positions = pos;
+    newCell->positions->x = pos.x;
+    newCell->positions->y = pos.y;
 
     // Proximo da Antiga celula final aponta para nova Celula
     fila->End->pProx = newCell;
@@ -94,48 +97,86 @@ void freeFila(Lista* Fila){
     free(Fila);
 }
 
+int BFS(Maze *maze, Lista *fila, Position *mouse){
+    Position actions[4] = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}};
+    Position newPos = *mouse; //Inicia com a posicao inicial do rato
+
+    //mouse->x,y posicao inicial do rato
+    if(!insertPosFila(fila, *mouse)){
+        printf("Nao foi possivel inserir a posicao");
+        return false;
+    }
+
+    int res = false;
+
+    while(!isEmptyFila(fila)){
+
+        // Verifica se chegou no final -> Retorna tamanho da fila
+        if( fila->Head->pProx->positions->x == maze->finalPosX && 
+            fila->Head->pProx->positions->y == maze->finalPosY){
+                printf("%d\n", fila->tam - 4); //Nao sei porque - 4
+                printMaze(maze);
+                res = 1;
+            }
+
+        bool caminhoValido = false;
+
+        for(int i = 0; i < 4; i++){
+            newPos.x = fila->Head->pProx->positions->x + actions[i].x;
+            newPos.y = fila->Head->pProx->positions->y + actions[i].y;
+
+            if(isValid(maze, &newPos)){
+                insertPosFila(fila, newPos);
+                caminhoValido = true;
+                maze->array[newPos.y][newPos.x] = '.';
+                break;
+            }
+        }
+
+        if(!caminhoValido){
+            //if(maze->array[newPos.y][newPos.x] == '.')
+                //maze->array[newPos.y][newPos.x] = ' ';
+            removePosFila(fila);
+        }
+    }
+    printf("RES: %d\n", res);
+    return res; //Imprimir tentativa
+
+} 
 
 int main()
 {
-    Position *pos = allocatePosition();
-    pos->x = 3;
-    pos->y = 4;
+    int x, y;
 
-    Position *pos2 = allocatePosition();
-    pos2->x = 5;
-    pos2->y = 8;
+    // Lendo dimensões do labirinto.
+    scanf("%d %d", &y, &x);
 
-    Lista *Fila = iniciaFila();
+    Lista* fila = iniciaFila();
+    char flag;
+    // Lendo a flag que diz o tipo de retorno do programa.
+    scanf(" %c", &flag);
 
-    if (isEmptyFila(Fila))
-        printf("e vazia\n");
+    Maze *maze = allocateMaze(y, x); // Alocando labirinto.
+
+    Position *mouse = allocatePosition(); // Aloca Rato
+
+    readMaze(maze, mouse); // Lê os caracteres que formam o labirinto.
+
+    // Verifica se existe um menor caminho.
+    int res = BFS(maze, fila, mouse);
+
+    if (res)
+        printf("Saiu\n");
+    else
+        printf("EPIC FAIL");
 
 
-    // 1 insercao
-    if (insertPosFila(Fila, pos))
-        printf("Inseriu\n");
-    
-    // 2 insercao
-    if (insertPosFila(Fila, pos2))
-        printf("Inseriu\n");
-    
-    showPos(Fila);
+    showPos(fila);
 
-    if(removePosFila(Fila))
-        printf("Removeu\n");
-    showPos(Fila);
+    // Libera os espaços alocados.
+    freePosition(mouse);
 
-    if(removePosFila(Fila))
-        printf("Removeu\n");
-    
-    showPos(Fila);
-
-    if (isEmptyFila(Fila))
-    {
-        printf("e vazia, %d\n", isEmptyFila(Fila));
-    }
-
-    freeFila(Fila);
+    freeMaze(maze);
 
     return 0;
 }
