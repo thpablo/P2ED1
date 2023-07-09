@@ -6,7 +6,7 @@
 
 Lista *iniciaPilha()
 {
-    Lista *pilha = (Lista *)malloc(sizeof(Lista));
+    Lista *pilha = (Lista *) malloc(sizeof(Lista));
 
     // Falha na alocacao da pilha
     if (pilha == NULL)
@@ -23,6 +23,8 @@ Lista *iniciaPilha()
 
     pilha->End = pilha->Head;
     pilha->Head->pProx = NULL;
+
+    pilha->tam = 0;
 
     return pilha;
 }
@@ -90,8 +92,6 @@ bool removePosPilha(Lista *pilha)
     free(pilha->Head->pProx);
 
     pilha->Head->pProx = cellAux;
-    
-    //pilha->tam--;
 
     return true;
 }
@@ -107,9 +107,9 @@ void showPos(Lista *pilha)
     }
 }
 
-void freePilha(Lista* pilha){
-    free(pilha->Head);
-    free(pilha);
+
+void removeAllPilha(Lista *pilha){
+    while(removePosPilha(pilha));
 }
 
 /*
@@ -198,6 +198,8 @@ int main()
 
     // Libera os espaços alocados.
     freePosition(mouse);
+
+    freeFilaOrPilha(pilha);
 
     freeMaze(maze);
     return 0;

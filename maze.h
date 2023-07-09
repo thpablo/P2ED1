@@ -10,6 +10,7 @@ typedef struct maze
   char **array;
   int y, x;
   int finalPosY, finalPosX;
+  int inicialPosY, inicialPosX;
 }Maze;
 
 

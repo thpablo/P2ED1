@@ -25,6 +25,8 @@ Lista *iniciaFila(){
     // Proximo da cabeca aponta para NULL
     filaAlocated->Head->pProx = NULL;
 
+    filaAlocated->tam = 0;
+
     return filaAlocated;
 }
 
@@ -56,8 +58,6 @@ bool insertPosFila(Lista* fila, Position pos){
 
     // Proximo da nova celula aponta para NULL
     newCell->pProx = NULL;
-
-    fila->tam++;
 
     return true;
 }
@@ -92,10 +92,11 @@ bool removePosFila(Lista *fila){
 
     return true;
 }
-void freeFila(Lista* Fila){
-    free(Fila->Head);
-    free(Fila);
+
+void removeAllFila(Lista *fila){
+    while(removePosFila(fila));
 }
+
 
 int BFS(Maze *maze, Lista *fila, Position *mouse){
     Position actions[4] = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}};
@@ -112,11 +113,11 @@ int BFS(Maze *maze, Lista *fila, Position *mouse){
     while(!isEmptyFila(fila)){
 
         // Verifica se chegou no final -> Retorna tamanho da fila
-        if( fila->Head->pProx->positions->x == maze->finalPosX && 
-            fila->Head->pProx->positions->y == maze->finalPosY){
-                printf("%d\n", fila->tam - 4); //Nao sei porque - 4
+        if( fila->End->positions->x == maze->finalPosX && 
+            fila->End->positions->y == maze->finalPosY   ){
+                printf("%d\n", fila->tam - 1); //Nao sei porque - 3
                 printMaze(maze);
-                res = 1;
+                return fila->tam;
             }
 
         bool caminhoValido = false;
@@ -129,13 +130,12 @@ int BFS(Maze *maze, Lista *fila, Position *mouse){
                 insertPosFila(fila, newPos);
                 caminhoValido = true;
                 maze->array[newPos.y][newPos.x] = '.';
+                fila->tam++;
                 break;
             }
         }
 
         if(!caminhoValido){
-            //if(maze->array[newPos.y][newPos.x] == '.')
-                //maze->array[newPos.y][newPos.x] = ' ';
             removePosFila(fila);
         }
     }
@@ -146,7 +146,7 @@ int BFS(Maze *maze, Lista *fila, Position *mouse){
 
 int main()
 {
-    int x, y;
+    int x = 0, y = 0;
 
     // Lendo dimensões do labirinto.
     scanf("%d %d", &y, &x);
@@ -170,12 +170,13 @@ int main()
     else
         printf("EPIC FAIL");
 
-
-    showPos(fila);
-
     // Libera os espaços alocados.
     freePosition(mouse);
 
+    removeAllFila(fila);
+
+    freeFilaOrPilha(fila);
+    
     freeMaze(maze);
 
     return 0;

@@ -102,8 +102,8 @@ void readMaze(Maze *maze, Position *mouse)
       scanf("%c", &(maze->array[i][j]));
       if (maze->array[i][j] == 'M')
       {
-        mouse->y = i;
-        mouse->x = j;
+        mouse->y = i; maze->inicialPosY = i;
+        mouse->x = j; maze->inicialPosX = j;
       }
     }
     getchar(); // Descarta o caractere de quebra de linha após cada linha.
@@ -113,14 +113,15 @@ void readMaze(Maze *maze, Position *mouse)
 // Função para imprimir o labirinto.
 void printMaze(Maze *maze)
 {
+  // Colocando M na posicao inicial do rato
+  maze->array[maze->inicialPosY][maze->inicialPosX] = 'M';
+
   for (int i = 0; i < maze->y; i++)
   {
     for (int j = 0; j < maze->x; j++)
     {
       if (maze->array[i][j] == '.')
-      {
         printf(RED "%c" RESET, maze->array[i][j]);
-      }
       else
         printf("%c", maze->array[i][j]);
     }
