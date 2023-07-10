@@ -9,22 +9,6 @@
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
-// TAD MAZE, define o labirinto.
-
-
-// TAD Position, define uma coordenada.
-
-
-/*
- * TAD Route, define uma estrutura de rota composta de
- * coordenadas [y, x], e a distância total da rota.
- */
-
-/* -------- Lista Encadeada ----------- */
-
-// **Lista Encadeada para recursao tambem?
-
-
 // Aloca o TAD MAZE.
 Maze *allocateMaze(int y, int x)
 {
@@ -35,10 +19,14 @@ Maze *allocateMaze(int y, int x)
   maze->y = y;
   maze->x = x;
 
+  // Conversao de tipos de variaveis para alocacao
+  long unsigned int convertedY = (long unsigned int) y;
+  long unsigned int convertedX = (long unsigned int) x;
+
   // Aloca memória para a matriz que representa o labirinto.
-  maze->array = (char **)malloc(y * sizeof(char *));
+  maze->array = (char **) malloc(convertedY * sizeof(char *));
   for (int i = 0; i < y; i++)
-    maze->array[i] = (char *)malloc(x * sizeof(char));
+    maze->array[i] = (char *) malloc(convertedX * sizeof(char));
 
   // Saída do labirinto.
   maze->finalPosY = y - 2;
@@ -63,10 +51,11 @@ void freeMaze(Maze *maze)
 // Aloca o TAD Route
 Route *allocateRoute(int MAX_SIZE)
 {
+  long unsigned int convertedMaxSize = (long unsigned int) MAX_SIZE;
   Route *route = (Route *)malloc(sizeof(Route));
-  route->positions = (Position *)malloc(sizeof(Position) * MAX_SIZE);
+  route->positions = (Position *)malloc(sizeof(Position) * convertedMaxSize);
   route->distance = 0;
-  route->minPositions = (Position *)malloc(sizeof(Position) * MAX_SIZE);
+  route->minPositions = (Position *)malloc(sizeof(Position) * convertedMaxSize);
   route->minDistance = INT_MAX; // Inicialmente definido como um valor alto.
   route->size = 0;
 
@@ -102,8 +91,10 @@ void readMaze(Maze *maze, Position *mouse)
       scanf("%c", &(maze->array[i][j]));
       if (maze->array[i][j] == 'M')
       {
-        mouse->y = i; maze->inicialPosY = i;
-        mouse->x = j; maze->inicialPosX = j;
+        mouse->y = i;
+        mouse->x = j;
+        maze->inicialPosY = i;
+        maze->inicialPosX = j;
       }
     }
     getchar(); // Descarta o caractere de quebra de linha após cada linha.
@@ -113,17 +104,13 @@ void readMaze(Maze *maze, Position *mouse)
 // Função para imprimir o labirinto.
 void printMaze(Maze *maze)
 {
-  // Colocando M na posicao inicial do rato
   maze->array[maze->inicialPosY][maze->inicialPosX] = 'M';
-
   for (int i = 0; i < maze->y; i++)
   {
     for (int j = 0; j < maze->x; j++)
     {
-      if (maze->array[i][j] == '.')
-        printf(RED "%c" RESET, maze->array[i][j]);
-      else
-        printf("%c", maze->array[i][j]);
+      
+      printf("%c", maze->array[i][j]);
     }
     printf("\n");
   }
@@ -158,7 +145,7 @@ int isValid(Maze *maze, Position *new_position)
     return 0;
   }
 
-  if (maze->array[new_position->y][new_position->x] == '.')
+  if (maze->array[new_position->y][new_position->x] == 'o')
     // Ele já andou naquele local
     return 0;
 
@@ -169,30 +156,12 @@ int find(Position *mouse, Maze *maze, Route *route, int index)
 {
   if ((mouse->y == maze->finalPosY && mouse->x == maze->finalPosX))
   {
-    // O rato encontrou a saída do labirinto.
-
-    /*
-     * Quando acha a saída, armazena o tamanho do caminho que teve ao
-     * chegar.
-     */
-    if (route->distance < route->minDistance)
-    {
-      route->minDistance = route->distance;
-
-      for (int i = 0; i < route->distance; i++)
-      {
-        route->minPositions[i] = route->positions[i];
-      }
-
-      route->distance = 0;
-    }
-
     route->size = index;
     return 1;
   }
 
   // Define as quatro ações possíveis.
-  Position actions[4] = {{0, -1}, {1, 0}, {-1, 0}, {0, 1}};
+  Position actions[4] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
   // Testa com os 4 movimentos possíveis.
   for (int i = 0; i < 4; i++)
@@ -200,31 +169,41 @@ int find(Position *mouse, Maze *maze, Route *route, int index)
 
     Position new_position = {mouse->y + actions[i].y,
                              mouse->x + actions[i].x}; // Atualiza a posição.
-
     // Verifica se a posição for válida
     if (isValid(maze, &new_position))
     {
-      route->positions[index] =
-          new_position; // Nova posição armazenada no array.
+      route->positions[index] = new_position; // Nova posição armazenada no array.
       route->distance++;
 
       // Adiciona ponto onde andou
       if (maze->array[new_position.y][new_position.x] != 'M')
-        maze->array[new_position.y][new_position.x] = '.';
+        maze->array[new_position.y][new_position.x] = 'o';
 
       if (find(&new_position, maze, route, index + 1))
       {
         // Caminho encontrado.
-
         return 1;
       }
-      if (maze->array[new_position.y][new_position.x] != 'M')
+      if (maze->array[new_position.y][new_position.x] != 'M'){
         maze->array[new_position.y][new_position.x] = ' ';
+      }
       // Desfazendo alterações antes de explorar a proxima ação.
       route->distance--;
     }
   }
-
   // Não há caminho válido a partir desta posição.
   return 0;
+}
+
+int resolveRecursive(Maze *maze, Position *mouse, int x, int y){
+    Route *route = allocateRoute(y * x); // Aloca o array de rotas.
+
+      if(find(mouse, maze, route, 0)){
+        printf("%d\n", route->size);  
+        freeRoute(route);
+        return 1;
+      }
+
+      freeRoute(route);
+      return 0;
 }

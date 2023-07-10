@@ -1,20 +1,18 @@
-#include "maze.h" 
-#include <stdlib.h>
+#ifndef LIST_H
+#define LIST_H
 
+#include "maze.h" 
+
+// NODE
 typedef struct cell{
     struct cell *pProx; // Ponteiro para proxima
     Position *positions; 
 } Cell;
 
-
+// LIST
 typedef struct list{
     Cell *Head, *End;
     int tam;
 } Lista;
 
-void freeFilaOrPilha(Lista* FilaOrPilha){
-    free(FilaOrPilha->Head);
-    free(FilaOrPilha);
-}
-
-void freeFilaOrPilha(Lista* );
+#endif // LIST_H

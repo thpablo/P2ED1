@@ -4,22 +4,22 @@
 #include <stdio.h>
 
 // TAD MAZE
-
 typedef struct maze
 {
   char **array;
   int y, x;
   int finalPosY, finalPosX;
-  int inicialPosY, inicialPosX;
+  int inicialPosX, inicialPosY;
 }Maze;
 
-
+// TAD POSITION
 typedef struct position
 {
   int y;
   int x;
 } Position;
 
+// TAD ROUTE
 typedef struct route
 {
   Position *positions;    // Array de posições percorridas
@@ -61,5 +61,7 @@ int isValid(Maze *maze, Position *new_position);
 
 // Função recursiva que procura o menor caminho.
 int find(Position *, Maze *, Route *, int);
+
+int resolveRecursive(Maze *, Position *, int , int );
 
 #endif // MAZE_H
